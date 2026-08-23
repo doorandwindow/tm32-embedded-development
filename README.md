@@ -1,6 +1,8 @@
 # STM32 Embedded Development
 
-A [WorkBuddy](https://www.workbuddy.cn) skill package for developing, debugging, reviewing, and documenting STM32 firmware projects across HAL/LL, bare-metal, and RTOS codebases.
+An AI agent skill package for developing, debugging, reviewing, and documenting STM32 firmware projects across HAL/LL, bare-metal, and RTOS codebases.
+
+It follows the open [Agent Skills](https://agentskills.my/specification) standard (SKILL.md with YAML frontmatter), so it works with any tool that implements the spec — including Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenAI Codex, Windsurf, and WorkBuddy.
 
 Use this skill when work involves STM32 peripherals, CubeMX-generated code, board bring-up, interrupt/DMA behavior, embedded build/flash, or resource-constrained firmware. It does **not** activate for generic C/C++ work without STM32 context.
 
@@ -12,29 +14,53 @@ Use this skill when work involves STM32 peripherals, CubeMX-generated code, boar
 - **Structured delivery** — driver contracts, pin/DMA/IRQ resource tables, resource budgets, test matrices, and known-issues records as the definition of done.
 - **No fabrication** — commands that cannot be run or missing hardware are reported as gaps; logs, measurements, and success results are never invented.
 
-## Installation
+## Requirements
 
-### Prerequisites
-
-- [WorkBuddy](https://www.workbuddy.cn) desktop app (Windows / macOS)
+- Any AI coding tool that supports the Agent Skills standard (Claude Code, Cursor, GitHub Copilot, Gemini CLI, Codex, Windsurf, WorkBuddy, …)
 - STM32 toolchain (e.g. STM32CubeCLI, arm-none-eabi-gcc) — only required if the skill's build/verify commands are used
 
-### Install as a user-level skill (all projects)
+## Installation
+
+### 1. Get the skill
 
 ```bash
 git clone https://github.com/doorandwindow/tm32-embedded-development.git
-cp -r tm32-embedded-development ~/.workbuddy/skills/
 ```
 
-### Install as a project-level skill (single project)
+### 2. Install into your agent's skills directory
+
+Copy (or symlink) the `stm32-embedded-development` folder into the skills directory of the tool you use:
+
+| Tool | User-level (all projects) | Project-level (single project) |
+| --- | --- | --- |
+| Claude Code | `~/.claude/skills/` | `.claude/skills/` |
+| Cursor | `~/.cursor/skills/` | `.cursor/skills/` |
+| GitHub Copilot | `~/.copilot/skills/` | `.github/skills/` |
+| Gemini CLI | `~/.gemini/skills/` | `.gemini/skills/` |
+| OpenAI Codex | `~/.codex/skills/` | `.codex/skills/` |
+| Windsurf | `~/.codeium/windsurf/skills/` | `.windsurf/skills/` |
+| WorkBuddy | `~/.workbuddy/skills/` | `.workbuddy/skills/` |
+
+Example (user-level, Claude Code):
 
 ```bash
-cp -r tm32-embedded-development <your-project>/.workbuddy/skills/
+cp -r tm32-embedded-development ~/.claude/skills/
 ```
+
+**Cross-tool tip:** to use the skill in multiple agents at once, symlink the same folder into each tool's skills directory instead of copying:
+
+```bash
+ln -s ~/tm32-embedded-development ~/.claude/skills/stm32-embedded-development
+ln -s ~/tm32-embedded-development ~/.cursor/skills/stm32-embedded-development
+```
+
+### 3. Verify
+
+Start a new agent session in an STM32 project and describe a task that should trigger the skill (e.g. "review this UART driver for DMA issues"). The agent should auto-load the skill. If it doesn't, check that the folder name matches the `name` field in `SKILL.md` and that the description has clear trigger conditions.
 
 ## Usage
 
-The skill activates automatically when a task involves STM32 development, debugging, or review. It guides the workflow through:
+Once installed, the skill activates automatically when a task involves STM32 development, debugging, or review. It guides the workflow through:
 
 1. **Start every task** — read authoritative workspace fact files (`project-facts.md`, `hardware-profile.md`, `toolchain-profile.md`, `coding-rules.md`) or perform read-only discovery.
 2. **Implementation decisions** — follow the existing architecture, respect CubeMX generation boundaries, express ownership explicitly in bare-metal or RTOS code.
@@ -70,7 +96,3 @@ Contributions are welcome. Please keep the following in mind:
 ## License
 
 This project is currently **unlicensed** — all rights reserved by the author. A license will be added once the author selects one.
-
----
-
-*Part of the WorkBuddy skills ecosystem.*
